@@ -1,54 +1,41 @@
 import React, { Component } from "react";
 import "./App.css";
+import Radium, { StyleRoot } from "radium";
 import Person from "./Person/Person";
-import person from "./Person/Person";
 
 class App extends Component {
   state = {
     persons: [
-      { id: "ddas", name: "Boo", age: 10 },
-      { id: "bcds", name: "Too", age: 20 },
-      { id: "ngtd", name: "Roo", age: 30 }
+      { id: "asfa1", name: "Max", age: 28 },
+      { id: "vasdf1", name: "Manu", age: 29 },
+      { id: "asdf11", name: "Stephanie", age: 26 }
     ],
     otherState: "some other value",
-    showPersons: true
+    showPersons: false
   };
 
-  // switchNameHandler = newName => {
-  //   // console.log("was clicked");
-  //   // Don't do this : this.state.persons[0].name = "Booooroo";
-  //   this.setState({
-  //     persons: [
-  //       { name: newName, age: 10 },
-  //       { name: "Toobee", age: 20 },
-  //       { name: "Rootee", age: 30 }
-  //     ]
-  //   });
-  // };
-
   nameChangedHandler = (event, id) => {
-    const personIndex = this.state.persons.find(p => {
+    const personIndex = this.state.persons.findIndex(p => {
       return p.id === id;
     });
+
     const person = {
       ...this.state.persons[personIndex]
     };
+
+    // const person = Object.assign({}, this.state.persons[personIndex]);
 
     person.name = event.target.value;
 
     const persons = [...this.state.persons];
     persons[personIndex] = person;
-    this.setState({
-      persons: [
-        { name: "Boo", age: 10 },
-        { name: event.target.value, age: 20 },
-        { name: "Rootee", age: 30 }
-      ]
-    });
+
+    this.setState({ persons: persons });
   };
 
   deletePersonHandler = personIndex => {
-    const persons = this.state.persons.slice();
+    // const persons = this.state.persons.slice();
+    const persons = [...this.state.persons];
     persons.splice(personIndex, 1);
     this.setState({ persons: persons });
   };
@@ -60,19 +47,27 @@ class App extends Component {
 
   render() {
     const style = {
-      backgroundColor: "white",
+      backgroundColor: "green",
+      color: "white",
       font: "inherit",
       border: "1px solid blue",
-      padding: "8px"
+      padding: "8px",
+      cursor: "pointer",
+      ":hover": {
+        backgroundColor: "lightgreen",
+        color: "black"
+      }
     };
+
     let persons = null;
+
     if (this.state.showPersons) {
       persons = (
         <div>
           {this.state.persons.map((person, index) => {
             return (
               <Person
-                click={this.deletePersonHandler(index)}
+                click={() => this.deletePersonHandler(index)}
                 name={person.name}
                 age={person.age}
                 key={person.id}
@@ -80,22 +75,38 @@ class App extends Component {
               />
             );
           })}
-          ;
         </div>
       );
+
+      style.backgroundColor = "red";
+      style[":hover"] = {
+        backgroundColor: "salmon",
+        color: "black"
+      };
     }
+
+    const classes = [];
+    if (this.state.persons.length <= 2) {
+      classes.push("red"); // classes = ['red']
+    }
+    if (this.state.persons.length <= 1) {
+      classes.push("bold"); // classes = ['red', 'bold']
+    }
+
     return (
-      <div className="App">
-        <h1>Hi, I'm a React App</h1>
-        <p>This is really working!</p>
-        <button style={style} onClick={this.togglePersonsHandler}>
-          Switch Name
-        </button>
-        {persons}
-      </div>
+      <StyleRoot>
+        <div className="App">
+          <h1>Hi, I'm a React App</h1>
+          <p className={classes.join(" ")}>This is really working!</p>
+          <button style={style} onClick={this.togglePersonsHandler}>
+            Toggle Persons
+          </button>
+          {persons}
+        </div>
+      </StyleRoot>
     );
     // return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
   }
 }
 
-export default App;
+export default Radium(App);
